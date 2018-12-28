@@ -74,3 +74,5 @@ typings/
 .hgignore
 .hg/
 
+# python
+__pycache__
