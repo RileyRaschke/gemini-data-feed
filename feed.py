@@ -36,41 +36,49 @@ class OrderBook:
 
                 if event['side'] == 'bid':
                     if not str(event['price']) in self.bidBook:
-                        self.bidBook[str(event['price'])] = 0.0
-                    self.bidBook[str(event['price'])] += float(event['delta'])
+                        self.bidBook[ "{:5.2f}".format(float(event['price'])) ] = 0.0
+                    self.bidBook[ "{:5.2f}".format(float(event['price'])) ] += float(event['delta'])
                 elif event['side'] == 'ask':
                     if not str(event['price']) in self.askBook:
-                        self.askBook[str(event['price'])] = 0.0
-                    self.askBook[str(event['price'])] += float(event['delta'])
+                        self.askBook[ "{:5.2f}".format(float(event['price'])) ] = 0.0
+                    self.askBook[ "{:5.2f}".format(float(event['price'])) ] += float(event['delta'])
 
                 if self.bidBook:
-                    self.bid = max( map(lambda x: float(x), dict(filter(lambda x: x[1] > 0, self.bidBook.items())).keys()) );
-                    if self.bid > 0: self.bidSize = self.bidBook[ "{:5.2f}".format(self.bid) ]
+                    self.bid = max( map(lambda x: float(x), dict(filter(lambda x: x[1] > 0.00001, self.bidBook.items())).keys()) );
+                    if self.bid > 0.00001: self.bidSize = self.bidBook[ "{:5.2f}".format(self.bid) ]
                 if self.askBook:
-                    self.ask = min( map(lambda x: float(x), dict(filter(lambda x: x[1] > 0, self.askBook.items())).keys()) );
-                    if self.ask > 0: self.askSize = self.askBook[ "{:5.2f}".format(self.ask) ]
+                    self.ask = min( map(lambda x: float(x), dict(filter(lambda x: x[1] > 0.00001, self.askBook.items())).keys()) );
+                    if self.ask > 0.00001: self.askSize = self.askBook[ "{:5.2f}".format(self.ask) ]
 
             except Exception:
                 traceback.print_exc()
 
     def printLast(self):
         print(
-            "Last: " + str(self.last) +
-            " spread: " + str(self.ask-self.bid) +
-            " last_amt: " + str(self.lastAmount) +
-            " last_side: " + self.lastSide
+            "Last: " + "{:5.2f}".format(self.last) +
+            " x " + "{:5.5f}".format(self.lastAmount) +
+            " last_side: " + self.lastSide +
+            " spread: " + "{:5.5f}".format(self.ask-self.bid)
         )
 
     def printStats(self):
         try:
-            pprint.pprint( dict(filter( lambda x: float(x[0]) > self.bid-7.5 and x[1] > 0, self.bidBook.items() )) )
-            print( "bid: " + str(self.bid) + "x" + str(self.bidSize) )
+            pprint.pprint( dict( filter(
+                lambda x:
+                    float(x[0]) > self.bid-7.5 and x[1] > 0.00001,
+                self.bidBook.items()
+            )))
+            print( "bid: " + "{:5.2f}".format(self.bid) + " x " + "{:5.5f}".format(self.bidSize) )
 
             if self.last > 0: self.printLast()
-            else: print("spread: " + str(self.ask-self.bid) )
+            else: print("spread: " + "{:5.5f}".format(self.ask-self.bid) )
 
-            print( "ask: " + str(self.ask) + "x" + str(self.askSize) )
-            pprint.pprint( dict(filter( lambda x: float(x[0]) < self.ask+7.5 and x[1] > 0, self.askBook.items() )) )
+            print( "ask: " + "{:5.2f}".format(self.ask) + " x " + "{:5.5f}".format(self.askSize) )
+            pprint.pprint( dict( filter(
+                lambda x:
+                    float(x[0]) < self.ask+7.5 and x[1] > 0.00001,
+                self.askBook.items()
+            )))
             print("\n")
         except Exception:
             traceback.print_exc()
