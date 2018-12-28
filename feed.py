@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import traceback
+import pprint
 
 import websocket
 import json
@@ -37,7 +38,15 @@ class OrderBook:
                 traceback.print_exc()
 
     def printStats(self):
-        print( "Last: " + str(self.last) + " LastSide: " + self.lastSide + " LastAmount: " + str(self.lastAmount)  )
+        print(
+            "Last: " + str(self.last) +
+            " LastSide: " + self.lastSide +
+            " LastAmount: " + str(self.lastAmount) + "\n"
+        )
+        print("BidBook: ")
+        pprint.pprint( self.bidBook )
+        print("AskBook: ")
+        pprint.pprint( self.askBook )
 
 orderBook = OrderBook()
 
