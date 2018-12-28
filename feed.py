@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+TICKER_SYMBOL='btcusd'
+
 import traceback
 import pprint
 
@@ -20,9 +22,9 @@ class OrderBook:
 
     def addEvent(self, event):
         if event['type'] == 'trade':
-            self.last = event['price']
+            self.last = float(event['price'])
+            self.lastAmount = float(event['amount'])
             self.lastSide = event['makerSide']
-            self.lastAmount = event['amount']
 
         if event['type'] == 'change':
             try:
@@ -33,20 +35,26 @@ class OrderBook:
                 elif event['side'] == 'ask':
                     if not str(event['price']) in self.askBook:
                         self.askBook[str(event['price'])] = 0.0
-                    self.askBook[str(event['price'])] = float(event['delta'])
+                    self.askBook[str(event['price'])] += float(event['delta'])
             except Exception:
                 traceback.print_exc()
 
     def printStats(self):
         print(
-            "Last: " + str(self.last) +
-            " LastSide: " + self.lastSide +
-            " LastAmount: " + str(self.lastAmount) + "\n"
+            "\nLast: " + str(self.last) + "\n" +
+            "LastSide: " + self.lastSide + " \n" +
+            "LastAmount: " + str(self.lastAmount)
         )
-        print("BidBook: ")
-        pprint.pprint( self.bidBook )
-        print("AskBook: ")
-        pprint.pprint( self.askBook )
+        if self.last > 0:
+            try:
+                print("BidBook: ")
+                pprint.pprint( dict(filter( lambda x: float(x[0]) > self.last-15 and x[1] > 0, self.bidBook.items() )) )
+                print("AskBook: ")
+                pprint.pprint( dict(filter( lambda x: float(x[0]) < self.last+15 and x[1] > 0, self.askBook.items() )) )
+            except Exception:
+                traceback.print_exc()
+
+
 
 orderBook = OrderBook()
 
@@ -58,7 +66,7 @@ def on_message(ws, message):
         orderBook.addEvent( event )
         orderBook.printStats()
 
-ws = websocket.WebSocketApp("wss://api.gemini.com/v1/marketdata/btcusd", on_message=on_message)
+ws = websocket.WebSocketApp("wss://api.gemini.com/v1/marketdata/" + TICKER_SYMBOL, on_message=on_message)
 
 ws.run_forever(ping_interval=5)
 
