@@ -1,5 +1,8 @@
 
+import sys
 import traceback
+import time
+import json
 import pprint
 from functools import reduce
 from datetime import datetime
@@ -23,6 +26,24 @@ class OrderBook:
         self.askTs = 0
         self.askSize = 0.0
         self.askDepthSize = 0.0
+        self.lastSeqNo = -1
+
+    def parseData( self, message):
+        feedData = json.loads( message )
+        ts = 0
+        if 'timestamp' in feedData.keys(): ts = feedData['timestamp']
+        else: ts = int(time.time())
+
+        if 'socket_sequence' in feedData.keys() and feedData['socket_sequence'] > self.lastSeqNo:
+            self.lastSeqNo = feedData['socket_sequence']
+            for event in feedData['events']:
+                self.addEvent( event, ts )
+
+            self.printStats()
+        else:
+            sys.stderr.write( "Socket message out of sequence - discarded:" )
+            sys.stderr.write( message )
+
 
     def addEvent(self, event, timestamp):
         if event['type'] == 'trade':
