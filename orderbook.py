@@ -4,6 +4,7 @@ import traceback
 import time
 import json
 import pprint
+
 from functools import reduce
 from datetime import datetime
 
@@ -39,7 +40,8 @@ class OrderBook:
             for event in feedData['events']:
                 self.addEvent( event, ts )
 
-            self.printStats()
+            #self.printStats()
+            print( self.toJson() )
         else:
             sys.stderr.write( "Socket message out of sequence - discarded:" )
             sys.stderr.write( message )
@@ -124,4 +126,12 @@ class OrderBook:
         except Exception:
             traceback.print_exc()
 
+    def toJson(self):
+        try:
+            return json.dumps(
+                dict(filter( lambda x: x[0] not in ('bidBook','askBook'), self.__dict__.items() )),
+                sort_keys=True, indent=2
+            )
+        except Exception:
+            traceback.print_exc()
 

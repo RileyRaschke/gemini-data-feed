@@ -26,8 +26,8 @@ args = opts.parse_args()
 orderBook = OrderBook(args.depthPercent)
 
 def on_message(ws, message):
-    #sys.stderr.write( message )
     orderBook.parseData( message )
+
 
 ws = websocket.WebSocketApp(
     "wss://api.gemini.com/v1/marketdata/" + args.ticker,
