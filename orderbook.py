@@ -39,9 +39,8 @@ class OrderBook:
             self.lastSeqNo = feedData['socket_sequence']
             for event in feedData['events']:
                 self.addEvent( event, ts )
-
             #self.printStats()
-            print( self.toJson() )
+            #print( self.toJson() )
         else:
             sys.stderr.write( "Socket message out of sequence - discarded:" )
             sys.stderr.write( message )

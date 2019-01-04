@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import argparse
 import websocket
 from orderbook import OrderBook
@@ -26,8 +27,10 @@ args = opts.parse_args()
 orderBook = OrderBook(args.depthPercent)
 
 def on_message(ws, message):
+    #sys.stderr.write( message )
     orderBook.parseData( message )
-
+    print( orderBook.toJson() )
+    #orderBook.printStats()
 
 ws = websocket.WebSocketApp(
     "wss://api.gemini.com/v1/marketdata/" + args.ticker,
