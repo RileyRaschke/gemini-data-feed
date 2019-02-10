@@ -1,0 +1,14 @@
+{
+  "name": "gemini-data-feed-nodetests",
+  "version": "1.0.0",
+  "description": "Node test compontents utilizing streamed/parsed data for potential web consumption",
+  "main": "onDataStreamTest.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Riley Raschke",
+  "license": "MIT",
+  "dependencies": {
+    "netcat": "^1.4.0"
+  }
+}

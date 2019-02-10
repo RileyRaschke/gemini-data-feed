@@ -102,3 +102,45 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Site Specific/Production Items
+site-data/init-mongo-PROD.sh
+site-data/init-mongo-DEV.sh
+config/production.yaml
+config/dev.yaml
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Test Dependency directories
+node_modules/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment variables file
+.env
+
+# next.js build output
+.next
+
+# editors
+*.swp
+
+#mercurial
+.hgignore
+.hg/
+

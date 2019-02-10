@@ -1,0 +1,13 @@
+---
+sourceFeedUri: 'wss://api.gemini.com/v1/marketdata/'
+serverFeedSocket: '/tmp/gemini-feed.sock'
+serverStatusSocket: '/tmp/gemini-status.sock'
+serverListener: '/tmp/gemini-status.sock'
+defaultDepthPercent: 0.05
+tickers:
+  btcusd: 0.005
+  ethusd: 0.01
+  bchusd: 0.01
+  ltcusd: 0.01
+  zecusd: 0.01
+
