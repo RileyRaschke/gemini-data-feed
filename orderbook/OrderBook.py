@@ -1,3 +1,7 @@
+###
+# Author: Riley Raschke <rileyATrrappsdevDOTcom>
+# © 2019 rrappsdev.com
+##
 
 import sys
 import traceback
@@ -9,7 +13,8 @@ from functools import reduce
 from datetime import datetime
 
 class OrderBook:
-    def __init__(self, depthPercent):
+    def __init__(self, depthPercent, ticker):
+        self.ticker = ticker
         self.depthPercent = depthPercent
         self.bidBook = {}
         self.askBook = {}
@@ -97,33 +102,38 @@ class OrderBook:
             except Exception:
                 traceback.print_exc()
 
-    def printLast(self):
-        print(
+    def lastPriceString(self):
+        return (
             "Last: " + "{:5.2f}".format(self.last) +
             " x " + "{:5.5f}".format(self.lastAmount) +
             "; last_side: " + self.lastSide +
             "; spread: " + "{:5.5f}".format(self.ask-self.bid) +
-            "; " + datetime.utcfromtimestamp(self.lastTickTS).strftime('%H:%M:%S')
+            "; " + datetime.utcfromtimestamp(self.lastTickTS).strftime('%H:%M:%S') +
+            "; seq: " + str(self.lastSeqNo)
         )
 
-    def printStats(self):
+    def statsString(self):
+        res = "";
         try:
-            pprint.pprint( self.bidDepth );
-            print( "bidDepth: " + "{:5.1f}".format(self.bidDepthSize) )
-            print( "bid: " + "{:5.2f}".format(self.bid) + " x " + "{:5.5f}".format(self.bidSize)
-                +" @ " + datetime.utcfromtimestamp(self.bidTs).strftime('%H:%M:%S')
-            )
+            #res += pprint.pformat( self.bidDepth ) + "\n"
+            res += "bidDepth: " + "{:5.1f}".format(self.bidDepthSize) + "\n"
+            res += "bid: " + "{:5.2f}".format(self.bid) + " x " + "{:5.5f}".format(self.bidSize)
+            res += " @ " + datetime.utcfromtimestamp(self.bidTs).strftime('%H:%M:%S') + "\n"
 
-            if self.last > 0: self.printLast()
-            else: print("spread: " + "{:5.5f}".format(self.ask-self.bid) )
+            if self.last > 0:
+                res += self.lastPriceString() + "\n"
+            else:
+                res += "spread: " + "{:5.5f}".format(self.ask-self.bid)
+                res += "; seq: " + str(self.lastSeqNo) + "\n"
 
-            print( "ask: " + "{:5.2f}".format(self.ask) + " x " + "{:5.5f}".format(self.askSize)
-                + " @ " + datetime.utcfromtimestamp(self.askTs).strftime('%H:%M:%S')
-            )
-            print( "askDepth: " + "{:5.1f}".format(self.askDepthSize) )
-            pprint.pprint( self.askDepth );
+            res += "ask: " + "{:5.2f}".format(self.ask) + " x " + "{:5.5f}".format(self.askSize)
+            res += " @ " + datetime.utcfromtimestamp(self.askTs).strftime('%H:%M:%S') + "\n"
+            res += "askDepth: " + "{:5.1f}".format(self.askDepthSize)
+            #res += "\n" + pprint.pformat( self.askDepth ) + "\n"
         except Exception:
             traceback.print_exc()
+
+        return res
 
     def toJson(self):
         try:
