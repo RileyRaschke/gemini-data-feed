@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+console.log("This may leave zombie processes, but was a short and sweet example for https://github.com/roccomuso/netcat/issues/11");
+console.log("Use the stream implementation instead, see: test/onDataStreamTest.js");
+return;
+
 const NetcatClient = require('netcat/client');
 
 const { spawn } = require('child_process')
