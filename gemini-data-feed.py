@@ -61,6 +61,7 @@ for maybeConfig in CONFIG_SEARCH_PATHS:
             with open( maybeConfig, 'r') as stream:
                 #log.debug("Trying to load: " + maybeConfig)
                 conf = load( stream )
+                args.config = maybeConfig
         except Exception as e:
             #sys.stderr.write(f"Tried: {maybeConfig} got: {e}\n")
             pass
