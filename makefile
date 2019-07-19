@@ -13,11 +13,11 @@ PSERVE=$(VENV)/bin/pserve
 PYTHON=$(VENV)/bin/python
 
 init:
-	test -f $(VENV)/.installed || \
 	test -e $(PYTHON) || \
 		{ echo "Creating virtual env: $(VENV)"; $(SYS_PYTHON) -m venv $(VENV_NAME) && \
-	      test -r requirements.txt && $(PIP) install -r requirements.txt && touch $(VENV)/.installed || \
-		    echo "No requirements.txt to install"; exit 0 ; }
+	      test -r requirements.txt && $(PIP) install -r requirements.txt && touch $(VENV)/.installed ; } || \
+		{ test -f $(VENV)/.installed || \
+				test -r requirements.txt && $(PIP) install -r requirements.txt && touch $(VENV)/.installed ; }
 
 test:
 	$(PYTHON) -m unittest
@@ -35,10 +35,10 @@ init-dev:
 #	$(PIP) install -e ".[dev]"
 
 update_deps:
-	$(VENV)/bin/pipreqs ./
+	$(VENV)/bin/pipreqs --force ./
 
 clean:
-	find . -type d -name __pycache__ -exec rm -r {} \; && \
+	find . -type d -name __pycache__ -exec rm -r {} \; 2>/dev/null && \
 	test -d ./venv &&  \
 	  rm -r ./venv
 

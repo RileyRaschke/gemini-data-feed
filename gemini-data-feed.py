@@ -12,10 +12,11 @@ from yaml import load
 
 from main import Main
 
-yourCwd = os.path.realpath('.')
+#yourCwd = os.path.realpath('.')
 myself  = os.path.basename(__file__)
+mydir   = os.path.dirname( __file__)
 
-CONFIG_SEARCH_PATHS = [f"~/etc/{myself}.yaml", f"./etc/{myself}.yaml", f"/etc/{myself}.yaml"]
+CONFIG_SEARCH_PATHS = [f"~/etc/{myself}.yaml", f"./etc/{myself}.yaml", f"/etc/{myself}.yaml", f"{mydir}/etc/{myself}.yaml"]
 
 FEED_URI_PREFIX='wss://api.gemini.com/v1/marketdata/'
 DEFAULT_SOCKET='/tmp/gemini-feed.sock'
@@ -60,7 +61,7 @@ for maybeConfig in CONFIG_SEARCH_PATHS:
         try:
             with open( maybeConfig, 'r') as stream:
                 #log.debug("Trying to load: " + maybeConfig)
-                conf = load( stream )
+                conf = yaml.load( stream, Loader=yaml.SafeLoader )
                 args.config = maybeConfig
         except Exception as e:
             #sys.stderr.write(f"Tried: {maybeConfig} got: {e}\n")
@@ -92,11 +93,6 @@ if not args.feedUri and 'sourceFeedUri' in conf.keys():
 if not args.feedUri:
        args.feedUri = FEED_URI_PREFIX
 
-#print( "You are in:", yourCwd )
-#print( "Program is file:", myself )
-#print( "Config search paths:", CONFIG_SEARCH_PATHS )
-#print( "Program is in path:", __file__ )
-#print( args )
 print( "Resolved conf:" )
 pprint( args.__dict__ )
 
