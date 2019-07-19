@@ -76,3 +76,4 @@ typings/
 
 # python
 __pycache__
+venv/
