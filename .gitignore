@@ -144,3 +144,7 @@ node_modules/
 .hgignore
 .hg/
 
+# python
+__pycache__
+venv/
+
