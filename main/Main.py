@@ -48,9 +48,8 @@ class Main:
         #self.socket.stopServer()
         raise ServiceExit
 
-    #def onMessage(self, ws, message, ticker):
+    # Method is bound to each `Feed` during __init__()
     def onMessage(self, message, ticker):
-        #print( ticker )
         self.orderbooks[ticker].parseData( message )
         self.socket.emit( self.orderbooks[ticker].toJson() )
         #print( self.orderbooks[ticker].statsString() )
