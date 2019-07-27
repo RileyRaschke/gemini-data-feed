@@ -6,8 +6,9 @@ serverListener: '/tmp/gemini-status.sock'
 defaultDepthPercent: 0.05
 tickers:
   btcusd: 0.005
-  ethusd: 0.01
+  #ethusd: 0.01
   bchusd: 0.01
   ltcusd: 0.01
-  zecusd: 0.01
+  #bchbtc: 0.1
+  #zecusd: 0.01
 
