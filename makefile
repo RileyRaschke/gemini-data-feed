@@ -21,19 +21,18 @@ init:
 test:
 	$(PYTHON) -m unittest
 
+#install:
+#	pip3 install -r requirements.txt || { echo "Wrong user or no pip3 most likly!" ; exit 1; }
+
 run: init
 	$(PYTHON) $(MAIN)
 
 init-dev:
 	test -e $(PYTHON) || \
     { echo "Creating virtual env: $(VENV)"; $(SYS_PYTHON) -m venv $(VENV_NAME) ; } && \
-    $(PIP) install --upgrade pip setuptools pipreqs && \
-    $(PIP) install "pyramid==1.10.4" waitress
+    $(PIP) install --upgrade pip setuptools pipreqs
 
-install-dev:
-	$(PIP) install -e ".[dev]"
-
-update_deps:
+update-deps:
 	$(VENV)/bin/pipreqs --force ./
 
 clean:

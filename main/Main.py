@@ -8,7 +8,7 @@ from threading import Thread
 from orderbook import OrderBook
 from feed import Feed
 from main import Broadcast
-from exc import ServiceExit
+#from exc import ServiceExit
 
 class ServiceExit(Exception):
     """
