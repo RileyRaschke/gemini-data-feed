@@ -8,7 +8,7 @@ import sys
 import os
 import argparse
 from pprint import pprint
-from yaml import load
+import yaml
 
 from main import Main
 
@@ -44,6 +44,10 @@ opts.add_argument('-f', '--feedUri',
     type=str, metavar=FEED_URI_PREFIX, default='',
     help='Gemini wss:// feed URI'
 )
+opts.add_argument('--dryStart',
+    action='store_true',
+    help='Do everything but `run`'
+)
 
 args = opts.parse_args()
 
@@ -60,11 +64,11 @@ for maybeConfig in CONFIG_SEARCH_PATHS:
     if len(conf.keys()) == 0:
         try:
             with open( maybeConfig, 'r') as stream:
-                #log.debug("Trying to load: " + maybeConfig)
                 conf = yaml.load( stream, Loader=yaml.SafeLoader )
                 args.config = maybeConfig
+                print( "Loaded %s" % maybeConfig)
         except Exception as e:
-            #sys.stderr.write(f"Tried: {maybeConfig} got: {e}\n")
+            sys.stderr.write(f"Tried: {maybeConfig} got: {e}\n")
             pass
 
 if not args.depthPercent and 'defaultDepthPercent' in conf.keys():
@@ -95,6 +99,9 @@ if not args.feedUri:
 
 print( "Resolved conf:" )
 pprint( args.__dict__ )
+
+if args.dryStart:
+    sys.exit( 0 );
 
 # Create program with opts
 svc = Main.Main( args.feedUri, args.tickers, args.socket)
