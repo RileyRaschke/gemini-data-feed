@@ -3,13 +3,14 @@
 # © 2019 rrappsdev.com
 ##
 
+import time
 import signal
 from threading import Thread
 
-from .exception import ServiceExit
-from .broadcast import Broadcast
 from geminidata import OrderBook, Feed
 
+from .exception import ServiceExit
+from .broadcast import Broadcast
 
 class Main:
     def __init__(self, feedUri, tickerDepths, outpipe):
@@ -58,7 +59,12 @@ class Main:
 
             for ticker in self.tickers:
                 self.threads[ticker].join()
+                time.sleep(5)
+                t = Thread(target=self.feeds[ticker]._reconnect )
+                self.threads[ticker] = t
+                t.start()
 
+            self.run() # foreverIsh!
         except ServiceExit:
             print("Stopping Service")
 
