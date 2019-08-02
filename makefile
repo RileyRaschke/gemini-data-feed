@@ -1,7 +1,7 @@
 
 .DEFAULT_GOAL := init
 
-MAIN=gemini-data-feed.py
+MAIN=geminidata-service.py
 
 SYS_PYTHON=$(shell which python3)
 VENV_PATH=./
