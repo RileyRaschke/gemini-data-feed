@@ -10,7 +10,7 @@ from websocket import create_connection
 from threading import Thread
 from threading import currentThread
 
-from service.exception import ServiceExit
+from geminidata.service.exception import ServiceExit
 
 class Feed:
     def __init__(self, feed_uri, ticker, onMessage):

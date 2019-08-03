@@ -1,7 +1,7 @@
 
 .DEFAULT_GOAL := init
 
-MAIN=geminidata-service.py
+MAIN=bin/geminidata-service.py
 
 SYS_PYTHON=$(shell which python3)
 VENV_PATH=./
@@ -30,7 +30,11 @@ run: init
 init-dev:
 	test -e $(PYTHON) || \
     { echo "Creating virtual env: $(VENV)"; $(SYS_PYTHON) -m venv $(VENV_NAME) ; } && \
-    $(PIP) install --upgrade pip setuptools pipreqs
+    $(PIP) install --upgrade pip pipreqs
+
+install-dev:
+	test -e $(PIP) && \
+    $(PIP) install -e .
 
 update-deps:
 	$(VENV)/bin/pipreqs --force ./

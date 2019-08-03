@@ -7,7 +7,7 @@ import time
 import signal
 from threading import Thread
 
-from geminidata import OrderBook, Feed
+from geminidata.feed import OrderBook, Feed
 
 from .exception import ServiceExit
 from .broadcast import Broadcast

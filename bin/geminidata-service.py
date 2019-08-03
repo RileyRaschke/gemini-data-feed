@@ -10,7 +10,7 @@ import argparse
 from pprint import pprint
 import yaml
 
-from service import Main
+from geminidata.service import Main
 
 #yourCwd = os.path.realpath('.')
 myself  = os.path.basename(__file__)
