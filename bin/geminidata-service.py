@@ -10,7 +10,7 @@ import argparse
 from pprint import pprint
 import yaml
 
-from main import Main
+from geminidata.service import Main
 
 #yourCwd = os.path.realpath('.')
 myself  = os.path.basename(__file__)
@@ -104,8 +104,10 @@ if args.dryStart:
     sys.exit( 0 );
 
 # Create program with opts
-svc = Main.Main( args.feedUri, args.tickers, args.socket)
+svc = Main( args.feedUri, args.tickers, args.socket)
 
 # Run program
+print( "svc.run()" )
 sys.exit( svc.run() )
+
 

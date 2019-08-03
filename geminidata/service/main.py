@@ -3,19 +3,14 @@
 # © 2019 rrappsdev.com
 ##
 
+import time
 import signal
 from threading import Thread
-from orderbook import OrderBook
-from feed import Feed
-from main import Broadcast
-#from exc import ServiceExit
 
-class ServiceExit(Exception):
-    """
-    Custom exception which is used to trigger the clean exit
-    of all running threads and the main program.
-    """
-    pass
+from geminidata.feed import OrderBook, Feed
+
+from .exception import ServiceExit
+from .broadcast import Broadcast
 
 class Main:
     def __init__(self, feedUri, tickerDepths, outpipe):
@@ -36,16 +31,15 @@ class Main:
 
         # Build stuff
         for ticker in self.tickers:
-            self.feeds[ticker] = Feed.Feed( self.feedUri, ticker, self.onMessage )
-            self.orderbooks[ticker] = OrderBook.OrderBook( self.depthPercent[ticker], ticker )
+            self.feeds[ticker] = Feed( self.feedUri, ticker, self.onMessage )
+            self.orderbooks[ticker] = OrderBook( self.depthPercent[ticker], ticker )
 
         # Write stuff
-        self.socket = Broadcast.Broadcast( self.outpipe )
+        self.socket = Broadcast( self.outpipe )
 
     # Exit clean.
     def service_shutdown(self, signum, frame):
         print('Caught signal %d' % signum)
-        #self.socket.stopServer()
         raise ServiceExit
 
     # Method is bound to each `Feed` during __init__()
@@ -57,8 +51,6 @@ class Main:
         #print( message )
 
     def run( self ):
-        #print( "Hello World!" );
-        print( "Main.run()" )
         try:
             for ticker in self.tickers:
                 t = Thread(target=self.feeds[ticker].start )
@@ -67,7 +59,12 @@ class Main:
 
             for ticker in self.tickers:
                 self.threads[ticker].join()
+                time.sleep(5)
+                t = Thread(target=self.feeds[ticker]._reconnect )
+                self.threads[ticker] = t
+                t.start()
 
+            self.run() # foreverIsh!
         except ServiceExit:
             print("Stopping Service")
 
@@ -77,8 +74,8 @@ class Main:
                 self.feeds[ticker].stop()
             except Exception as e:
                 print('Exception stoping feeds: %e' % e)
-        print("Feeds Terminated.")
 
+        print("Feeds Terminated.")
         print("Stopping local server.")
         self.socket.stopServer()
         print("server stopped")

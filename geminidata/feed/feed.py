@@ -4,11 +4,13 @@
 ##
 
 import sys
-#import websocket
 import socket
+
 from websocket import create_connection
 from threading import Thread
 from threading import currentThread
+
+from geminidata.service.exception import ServiceExit
 
 class Feed:
     def __init__(self, feed_uri, ticker, onMessage):
@@ -19,12 +21,22 @@ class Feed:
         self.onMessage = onMessage
         self.ticker = ticker
         #for feedUri in feedSrcUris:
-        self.feeds.append(
-            create_connection( self.feedUri + ticker, sockopt=((socket.IPPROTO_TCP, socket.TCP_NODELAY, 1),) )
-        )
+        self._connect()
 
     def msg(self, message):
         self.onMessage( message, self.ticker)
+
+    def _connect(self):
+        self.feeds.append(
+            create_connection( self.feedUri + self.ticker, sockopt=((socket.IPPROTO_TCP, socket.TCP_NODELAY, 1),) )
+        )
+
+    def _reconnect(self):
+        self.stop()
+        self.threads=[]
+        self.feeds=[]
+        self._connect()
+        self.start()
 
     def _feedStart(self, feed, arg):
         t = currentThread()
@@ -32,17 +44,28 @@ class Feed:
             try:
                 self.msg(feed.recv());
             except Exception as e:
+                ##
+                # Pretty sure this is just junk when zapped
+                ##print('Exception sending message: %e' % e)
                 pass
-        print(self.ticker,"feed Stopped");
+
+        print(self.ticker, " feed Stopped");
 
     def start(self):
-        for feed in self.feeds:
-            t = Thread(target=self._feedStart, args=(feed, "task",))
-            self.threads.append(t)
-            t.start()
+        try:
+            for feed in self.feeds:
+                t = Thread(target=self._feedStart, args=(feed, "task",))
+                self.threads.append(t)
+                t.start()
 
-        for thread in self.threads:
-            thread.join();
+            for thread in self.threads:
+                thread.join()
+
+        except ServiceExit as e:
+            print('Caught ServiceExit in Feed as: %e' % e)
+            self.stop()
+            pass
+
 
     def stop(self):
         for feed in self.feeds:
