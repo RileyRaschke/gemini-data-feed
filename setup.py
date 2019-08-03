@@ -12,7 +12,7 @@ setup(
     author='Riley Raschke',
     author_email='riley@rrappsdev.com',
     packages=['geminidata.service','geminidata.feed'],
-    scripts=['bin/geminidata-service.py'],
+    scripts=['geminidata-service.py'],
     url='',
     license='LICENSE',
     description='Merge/Massage Gemini Data feeds, as a service',
