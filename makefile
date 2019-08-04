@@ -18,12 +18,11 @@ init:
     { test -f $(VENV)/.installed || \
       test -r requirements.txt && $(PIP) install -r requirements.txt && touch $(VENV)/.installed ; }
 
-test:
+test: init
 	$(PYTHON) -m unittest
 
-install:
-	test -e $(PIP) && \
-    $(PIP) install -e .
+install: init test
+	test -e $(PIP) && $(PIP) install . 
 
 run: init
 	$(PYTHON) $(MAIN)
