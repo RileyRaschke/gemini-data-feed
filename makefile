@@ -22,7 +22,7 @@ test: init
 	$(PYTHON) -m unittest
 
 install: init test
-	test -e $(PIP) && $(PIP) install . 
+	test -e $(PIP) && $(PIP) install .
 
 run: init
 	$(PYTHON) $(MAIN)
@@ -41,6 +41,16 @@ install-dev:
 
 update-deps:
 	$(VENV)/bin/pipreqs --force ./
+
+docker-run:
+	cd docker && docker-compose up -d --build && sleep 2 && \
+	  docker logs geminidata-service #&& sleep 2 #&& \
+		#docker exec -it geminidata-service ncat -U /tmp/gemini-feed.sock
+
+#	cd docker && docker-compose up -d --build && docker exec -it geminidata-service ncat -U /tmp/gemini-feed.sock
+
+docker-stop:
+	docker stop geminidata-service && docker rm geminidata-service
 
 clean:
 	find . -type d -name "*egg-info" -exec rm -r {} \; 2>/dev/null ; \
