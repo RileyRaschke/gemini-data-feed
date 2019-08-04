@@ -1,7 +1,7 @@
 
 .DEFAULT_GOAL := init
 
-MAIN=bin/geminidata-service.py
+MAIN=geminidata-service.py
 
 SYS_PYTHON=$(shell which python3)
 VENV_PATH=./
@@ -18,14 +18,17 @@ init:
     { test -f $(VENV)/.installed || \
       test -r requirements.txt && $(PIP) install -r requirements.txt && touch $(VENV)/.installed ; }
 
-test:
+test: init
 	$(PYTHON) -m unittest
 
-#install:
-#	pip3 install -r requirements.txt || { echo "Wrong user or no pip3 most likly!" ; exit 1; }
+install: init test
+	test -e $(PIP) && $(PIP) install .
 
 run: init
 	$(PYTHON) $(MAIN)
+
+site-install:
+	$(SYS_PYTHON) -m pip install .
 
 init-dev:
 	test -e $(PYTHON) || \
@@ -34,12 +37,23 @@ init-dev:
 
 install-dev:
 	test -e $(PIP) && \
-    $(PIP) install -e .
+    $(PIP) install -e ".[dev]"
 
 update-deps:
 	$(VENV)/bin/pipreqs --force ./
 
+docker-run:
+	cd docker && docker-compose up -d --build && sleep 2 && \
+	  docker logs geminidata-service #&& sleep 2 #&& \
+		#docker exec -it geminidata-service ncat -U /tmp/gemini-feed.sock
+
+#	cd docker && docker-compose up -d --build && docker exec -it geminidata-service ncat -U /tmp/gemini-feed.sock
+
+docker-stop:
+	docker stop geminidata-service && docker rm geminidata-service
+
 clean:
+	find . -type d -name "*egg-info" -exec rm -r {} \; 2>/dev/null ; \
 	find . -type d -name __pycache__ -not -path $(VENV) -exec rm -r {} \; 2>/dev/null && \
     echo "So fresh so clean..."
 

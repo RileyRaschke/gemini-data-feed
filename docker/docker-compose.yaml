@@ -1,0 +1,33 @@
+# docker-compose.yml
+version: '3.2'
+services:
+  gfd-server:
+    image: 'local/gdf-server:0.1.1'
+    container_name: 'geminidata-service'
+    #build: '.'
+    build:
+      context: '../'
+      dockerfile: './docker/Dockerfile'
+    #environment:
+    # - 'LIVERELOAD_URL=http://localhost:35729'
+    #ports:
+    # - 'unix:/tmp/gemini-feed.sock:unix:/tmp/gemini-feed.sock'
+    volumes:
+     - '/tmp/geminidata-service/:/tmp/' # but this would be cool?
+     #- '../:/usr/src/app' # Don't really need this..
+#  livereload:
+#    container_name: 'livereload'
+#    image: 'local/livereload:0.04'
+#    build:
+#      context: './livereload'
+#      dockerfile: 'Dockerfile'
+#    environment:
+#     - 'DEBUG=*'
+#    ports:
+#     - '35729:35729'
+#    volumes:
+#     - './htdocs:/opt/watch'
+     #- './build:/opt/build'
+#    depends_on:
+#     - 'devserver'
+

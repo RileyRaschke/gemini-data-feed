@@ -6,7 +6,9 @@
 import sys
 import socket
 
+from json.decoder import JSONDecodeError
 from websocket import create_connection
+from websocket._exceptions import WebSocketConnectionClosedException
 from threading import Thread
 from threading import currentThread
 
@@ -43,28 +45,38 @@ class Feed:
         while getattr(t, "do_run", True):
             try:
                 self.msg(feed.recv());
-            except Exception as e:
+            except JSONDecodeError as e:
+                print(self.ticker, 'got JSONDecodeError!')
                 ##
                 # Pretty sure this is just junk when zapped
-                ##print('Exception sending message: %e' % e)
+                pass
+            except WebSocketConnectionClosedException as e:
+                #print(self.ticker, '- wss:// closed; -  %e' % e)
+                print(self.ticker, '- wss:// closed!')
+                ##
+                # Pretty sure this is just junk when zapped
+                pass
+            except Exception as e:
+                #print(self.ticker, '- Exception sending/receiving message: %e' % e)
+                print(self.ticker, '- Exception sending/receiving message')
                 pass
 
-        print(self.ticker, " feed Stopped");
+        print(self.ticker, "feed Stopped");
 
     def start(self):
-        try:
-            for feed in self.feeds:
-                t = Thread(target=self._feedStart, args=(feed, "task",))
-                self.threads.append(t)
-                t.start()
+        #try:
+        for feed in self.feeds:
+            t = Thread(target=self._feedStart, args=(feed, "task",))
+            self.threads.append(t)
+            t.start()
 
-            for thread in self.threads:
-                thread.join()
+        for thread in self.threads:
+            thread.join()
 
-        except ServiceExit as e:
-            print('Caught ServiceExit in Feed as: %e' % e)
-            self.stop()
-            pass
+        #except ServiceExit as e:
+        #    print('Caught ServiceExit in Feed as: %e' % e)
+        #    self.stop()
+        #    pass
 
 
     def stop(self):
